@@ -1,0 +1,7 @@
+tensorflow==2.13.0
+flask==2.3.3
+numpy
+pillow
+h5py
+werkzeug==2.3.7
+gunicorn  # optional, for deployment
