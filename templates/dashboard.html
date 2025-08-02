@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 class="mb-4">Your Prediction History</h2>
+{% if history %}
+    <div class="row">
+        {% for item in history %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="{{ item.image_path }}" class="card-img-top" alt="Skin Image">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.prediction }}</h5>
+                    <p class="card-text">Confidence: {{ '%.2f' % (item.confidence * 100) }}%</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No predictions yet. Upload an image on the home page.</p>
+{% endif %}
+{% endblock %}
