@@ -95,8 +95,7 @@ http://127.0.0.1:5000/
 ## 📈 Use Cases
 
 - AI/ML academic project  
-- Healthcare ML demonstration  
-- Portfolio project for AI/ML internships  
+- Healthcare ML demonstration   
 
 ---
 
