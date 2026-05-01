@@ -36,7 +36,7 @@ csrf = CSRFProtect(app)
 
 # Load ML model
 model = load_model("model/skin_model.h5")
-class_names = ['Eczema', 'Melanoma', 'Psoriasis']
+class_names = ['Nail_psoriasis', 'SJS-TEN', 'Vitiligo', 'acne', 'hyperpigmentation']
 
 # User model
 class User(db.Model, UserMixin):
