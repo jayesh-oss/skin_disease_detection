@@ -1,8 +1,11 @@
 import os
-from flask import Flask, request, render_template, redirect, url_for, flash
+import uuid
+from flask import Flask, request, render_template, redirect, url_for, flash, send_from_directory, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_wtf.csrf import CSRFProtect
+from werkzeug.utils import secure_filename
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import numpy as np
@@ -10,16 +13,26 @@ from disease_info import get_disease_info
 
 # Flask app setup
 app = Flask(__name__)
-app.secret_key = "secretkey123"
+# In production, use a strong environment variable: os.environ.get('SECRET_KEY', 'default_dev_key')
+app.secret_key = os.environ.get("SECRET_KEY", "secretkey123_dev")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['UPLOAD_FOLDER'] = "static/uploads"
+
+# Secure Image Storage
+app.config['UPLOAD_FOLDER'] = "instance/uploads"
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB upload limit
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Extensions
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+csrf = CSRFProtect(app)
 
 # Load ML model
 model = load_model("model/skin_model.h5")
@@ -35,7 +48,7 @@ class User(db.Model, UserMixin):
 class Prediction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    image_path = db.Column(db.String(200), nullable=False)
+    image_filename = db.Column(db.String(255), nullable=False)
     prediction = db.Column(db.String(100), nullable=False)
     confidence = db.Column(db.Float, nullable=False)
 
@@ -91,9 +104,22 @@ def dashboard():
 @app.route('/predict', methods=['POST'])
 @login_required
 def predict():
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(url_for('home'))
+        
     file = request.files['file']
-    if file:
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(url_for('home'))
+        
+    if file and allowed_file(file.filename):
+        # Secure filename generation
+        ext = file.filename.rsplit('.', 1)[1].lower()
+        secure_name = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        
         file.save(filepath)
 
         img = image.load_img(filepath, target_size=(128, 128))
@@ -104,13 +130,15 @@ def predict():
         predicted_class = class_names[np.argmax(prediction)]
         confidence = float(np.max(prediction))
 
-        # Save prediction history
-        new_prediction = Prediction(user_id=current_user.id, image_path=filepath, prediction=predicted_class, confidence=confidence)
+        # Save prediction history (only filename, not full path)
+        new_prediction = Prediction(user_id=current_user.id, image_filename=unique_filename, prediction=predicted_class, confidence=confidence)
         db.session.add(new_prediction)
         db.session.commit()
 
-        return render_template('result.html', prediction=predicted_class, confidence=confidence, image_path=filepath, prediction_id=new_prediction.id)
-    return redirect(url_for('dashboard'))
+        return render_template('result.html', prediction=predicted_class, confidence=confidence, pred=new_prediction, prediction_id=new_prediction.id)
+        
+    flash('Invalid file type. Only JPG and PNG are allowed.')
+    return redirect(url_for('home'))
 
 @app.route('/report/<int:prediction_id>')
 @login_required
@@ -122,6 +150,20 @@ def report(prediction_id):
         return redirect(url_for('dashboard'))
     disease = get_disease_info(pred.prediction)
     return render_template('report.html', pred=pred, disease=disease)
+
+@app.route('/image/<filename>')
+@login_required
+def serve_image(filename):
+    """Securely serve images only to the user who uploaded them."""
+    # Ensure secure filename check to prevent directory traversal
+    secure_name = secure_filename(filename)
+    
+    # Check if the current user owns this image
+    pred = Prediction.query.filter_by(image_filename=secure_name).first()
+    if not pred or pred.user_id != current_user.id:
+        abort(403) # Forbidden
+        
+    return send_from_directory(app.config['UPLOAD_FOLDER'], secure_name)
 
 if __name__ == '__main__':
     with app.app_context():

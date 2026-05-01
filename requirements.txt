@@ -1,5 +1,6 @@
 tensorflow
 flask==2.3.3
+flask-wtf
 numpy
 pillow
 h5py
