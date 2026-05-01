@@ -29,7 +29,8 @@
                         <div class="progress" style="height: 6px;">
                             <div class="progress-bar bg-primary" role="progressbar" style="width: {{ item.confidence * 100 }}%" aria-valuenow="{{ item.confidence * 100 }}" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <p class="text-end text-muted small mt-1 mb-0">Confidence Level</p>
+                        <p class="text-end text-muted small mt-1 mb-2">Confidence Level</p>
+                        <a href="/report/{{ item.id }}" class="btn btn-sm btn-primary-custom w-100">View Report</a>
                     </div>
                 </div>
             </div>

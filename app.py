@@ -6,6 +6,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 import numpy as np
+from disease_info import get_disease_info
 
 # Flask app setup
 app = Flask(__name__)
@@ -108,8 +109,19 @@ def predict():
         db.session.add(new_prediction)
         db.session.commit()
 
-        return render_template('result.html', prediction=predicted_class, confidence=confidence, image_path=filepath)
+        return render_template('result.html', prediction=predicted_class, confidence=confidence, image_path=filepath, prediction_id=new_prediction.id)
     return redirect(url_for('dashboard'))
+
+@app.route('/report/<int:prediction_id>')
+@login_required
+def report(prediction_id):
+    pred = Prediction.query.get_or_404(prediction_id)
+    # Ensure user can only view their own reports
+    if pred.user_id != current_user.id:
+        flash('Access denied.')
+        return redirect(url_for('dashboard'))
+    disease = get_disease_info(pred.prediction)
+    return render_template('report.html', pred=pred, disease=disease)
 
 if __name__ == '__main__':
     with app.app_context():

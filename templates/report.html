@@ -1,0 +1,167 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center animate-fade-in">
+    <div class="col-lg-10">
+
+        <!-- Report Header -->
+        <div class="premium-card p-4 p-md-5 mb-4 report-header-card">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center mb-4 mb-md-0">
+                    <img src="{{ pred.image_path }}" alt="Analyzed Image" class="img-fluid rounded shadow" style="max-height: 250px; object-fit: cover; border: 4px solid white;">
+                </div>
+                <div class="col-md-8">
+                    <p class="text-uppercase small fw-bold text-muted mb-1">Detected Condition</p>
+                    <h1 class="display-5 fw-bold text-dark mb-2">{{ disease.full_name }}</h1>
+
+                    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                        <span class="badge severity-badge severity-{{ disease.consult_urgency }} px-3 py-2 fs-6">
+                            {% if disease.consult_urgency == 'urgent' %}🔴{% else %}🟡{% endif %}
+                            {{ disease.severity }}
+                        </span>
+                        <span class="text-muted small">{{ disease.severity_description }}</span>
+                    </div>
+
+                    <div class="d-flex align-items-end gap-2 mb-1">
+                        <span class="text-muted small">AI Confidence Score</span>
+                        <span class="fw-bold text-primary ms-auto">{{ '%.1f' % (pred.confidence * 100) }}%</span>
+                    </div>
+                    <div class="progress shadow-sm" style="height: 10px;">
+                        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ pred.confidence * 100 }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consult Dermatologist Alert -->
+        <div class="consult-alert consult-{{ disease.consult_urgency }} mb-4 p-4 rounded">
+            <div class="d-flex align-items-start">
+                <div class="consult-icon me-3 fs-3">
+                    {% if disease.consult_urgency == 'urgent' %}🚨{% else %}👨‍⚕️{% endif %}
+                </div>
+                <div>
+                    <h4 class="fw-bold mb-2">
+                        {% if disease.consult_urgency == 'urgent' %}
+                            Seek Immediate Medical Attention
+                        {% else %}
+                            Consult a Dermatologist
+                        {% endif %}
+                    </h4>
+                    <p class="mb-0">{{ disease.consult_message }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- About This Condition -->
+        <div class="premium-card p-4 p-md-5 mb-4 report-section">
+            <div class="d-flex align-items-center mb-3">
+                <span class="report-section-icon me-3">📋</span>
+                <h3 class="fw-bold mb-0">About This Condition</h3>
+            </div>
+            <p class="text-muted mb-0 lh-lg">{{ disease.description }}</p>
+        </div>
+
+        <!-- Symptoms -->
+        <div class="premium-card p-4 p-md-5 mb-4 report-section">
+            <div class="d-flex align-items-center mb-4">
+                <span class="report-section-icon me-3">🔍</span>
+                <h3 class="fw-bold mb-0">Common Symptoms</h3>
+            </div>
+            <div class="row g-3">
+                {% for symptom in disease.symptoms %}
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start symptom-item p-3 rounded">
+                        <span class="text-primary me-3 mt-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+                            </svg>
+                        </span>
+                        <span>{{ symptom }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Treatment Options -->
+        <div class="premium-card p-4 p-md-5 mb-4 report-section">
+            <div class="d-flex align-items-center mb-4">
+                <span class="report-section-icon me-3">💊</span>
+                <h3 class="fw-bold mb-0">Treatment Options</h3>
+            </div>
+            <div class="row g-3">
+                {% for treatment in disease.treatment %}
+                <div class="col-lg-6">
+                    <div class="treatment-card p-3 rounded h-100">
+                        <div class="d-flex align-items-start">
+                            <span class="treatment-number me-3">{{ loop.index }}</span>
+                            <p class="mb-0">{{ treatment }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Prevention Tips -->
+        <div class="premium-card p-4 p-md-5 mb-4 report-section">
+            <div class="d-flex align-items-center mb-4">
+                <span class="report-section-icon me-3">🛡️</span>
+                <h3 class="fw-bold mb-0">Prevention Tips</h3>
+            </div>
+            <div class="row g-3">
+                {% for tip in disease.prevention %}
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start prevention-item p-3 rounded">
+                        <span class="text-success me-3 mt-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                              <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                            </svg>
+                        </span>
+                        <span>{{ tip }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Disclaimer & Actions -->
+        <div class="premium-card p-4 p-md-5 mb-4 text-center report-section">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-info-circle text-muted mb-3" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+            <h5 class="fw-bold text-muted">Medical Disclaimer</h5>
+            <p class="text-muted small mb-4">
+                This report is generated by an AI model and is intended for <strong>informational and educational purposes only</strong>.
+                It does <strong>not</strong> constitute a medical diagnosis, professional advice, or treatment recommendation.
+                Always consult a qualified dermatologist or healthcare provider for accurate diagnosis and appropriate treatment.
+            </p>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                <a href="/" class="btn btn-secondary-custom px-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
+                      <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
+                    </svg>
+                    Analyze Another
+                </a>
+                <a href="/dashboard" class="btn btn-primary-custom px-4">
+                    View Dashboard
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="ms-2" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                    </svg>
+                </a>
+                <button onclick="window.print()" class="btn btn-secondary-custom px-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                      <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
+                      <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 10a1 1 0 0 1-1-1v-4h8v4a1 1 0 0 1-1 1H5z"/>
+                    </svg>
+                    Print Report
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
