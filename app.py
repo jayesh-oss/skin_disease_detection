@@ -151,6 +151,25 @@ def report(prediction_id):
     disease = get_disease_info(pred.prediction)
     return render_template('report.html', pred=pred, disease=disease)
 
+@app.route('/delete/<int:prediction_id>', methods=['POST'])
+@login_required
+def delete_prediction(prediction_id):
+    pred = Prediction.query.get_or_404(prediction_id)
+    if pred.user_id != current_user.id:
+        abort(403)
+        
+    try:
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], pred.image_filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+    except Exception as e:
+        print(f"Error deleting file: {e}")
+        
+    db.session.delete(pred)
+    db.session.commit()
+    flash('Prediction deleted successfully.')
+    return redirect(url_for('dashboard'))
+
 @app.route('/image/<filename>')
 @login_required
 def serve_image(filename):
