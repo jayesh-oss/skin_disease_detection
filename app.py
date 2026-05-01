@@ -165,6 +165,10 @@ def serve_image(filename):
         
     return send_from_directory(app.config['UPLOAD_FOLDER'], secure_name)
 
+@app.route('/locator')
+def locator():
+    return render_template('locator.html')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

@@ -10,7 +10,66 @@
     --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
     --border-radius: 16px;
     --transition-fast: 0.2s ease;
+    
+    /* Semantic Colors */
+    --navbar-bg: linear-gradient(135deg, var(--primary-color) 0%, #1a365d 100%);
+    --footer-bg: white;
+    --border-color: #e2e8f0;
+    --upload-bg: #edf2f7;
+    --upload-border: #cbd5e0;
+    --upload-hover: #e2e8f0;
+    
+    /* Report Colors */
+    --symptom-bg: #f0f9ff;
+    --symptom-border: #e0f2fe;
+    --symptom-hover: #e0f2fe;
+    
+    --treatment-bg: #f8fafc;
+    --treatment-border: #e2e8f0;
+    --treatment-hover: #edf2f7;
+    
+    --prevention-bg: #f0fdf4;
+    --prevention-border: #dcfce7;
+    --prevention-hover: #dcfce7;
+    
+    --consult-rec-bg: #fffbeb;
+    --consult-urg-bg: #fef2f2;
 }
+
+[data-theme="dark"] {
+    --primary-color: #63b3ed;
+    --primary-hover: #4299e1;
+    --secondary-color: #4fd1c5;
+    --bg-light: #1a202c;
+    --text-main: #e2e8f0;
+    --text-muted: #a0aec0;
+    --card-bg: rgba(45, 55, 72, 0.95);
+    --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+    
+    --navbar-bg: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    --footer-bg: #1a202c;
+    --border-color: #4a5568;
+    --upload-bg: #2d3748;
+    --upload-border: #4a5568;
+    --upload-hover: #4a5568;
+    
+    --symptom-bg: rgba(66, 153, 225, 0.1);
+    --symptom-border: rgba(66, 153, 225, 0.2);
+    --symptom-hover: rgba(66, 153, 225, 0.2);
+    
+    --treatment-bg: rgba(226, 232, 240, 0.05);
+    --treatment-border: #4a5568;
+    --treatment-hover: rgba(226, 232, 240, 0.1);
+    
+    --prevention-bg: rgba(72, 187, 120, 0.1);
+    --prevention-border: rgba(72, 187, 120, 0.2);
+    --prevention-hover: rgba(72, 187, 120, 0.2);
+    
+    --consult-rec-bg: rgba(236, 201, 75, 0.1);
+    --consult-urg-bg: rgba(245, 101, 101, 0.1);
+}
+
 
 body {
     font-family: 'Inter', sans-serif;
@@ -23,7 +82,7 @@ body {
 
 /* Navbar */
 .navbar-custom {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #1a365d 100%);
+    background: var(--navbar-bg);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     padding: 1rem 0;
 }
@@ -92,7 +151,9 @@ h1, h2, h3, h4, h5 {
 /* Form Controls */
 .form-control-custom {
     border-radius: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-main);
     padding: 0.75rem 1rem;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -105,11 +166,11 @@ h1, h2, h3, h4, h5 {
 
 /* Custom File Upload */
 .upload-area {
-    border: 2px dashed #cbd5e0;
+    border: 2px dashed var(--upload-border);
     border-radius: var(--border-radius);
     padding: 3rem 2rem;
     text-align: center;
-    background: #edf2f7;
+    background: var(--upload-bg);
     transition: all var(--transition-fast);
     cursor: pointer;
     position: relative;
@@ -117,7 +178,7 @@ h1, h2, h3, h4, h5 {
 
 .upload-area:hover {
     border-color: var(--primary-color);
-    background: #e2e8f0;
+    background: var(--upload-hover);
 }
 
 .upload-area input[type="file"] {
@@ -154,8 +215,8 @@ h1, h2, h3, h4, h5 {
 footer {
     margin-top: auto;
     padding: 2rem 0;
-    background: white;
-    border-top: 1px solid #e2e8f0;
+    background: var(--footer-bg);
+    border-top: 1px solid var(--border-color);
     text-align: center;
     color: var(--text-muted);
 }
@@ -195,15 +256,15 @@ footer {
 }
 
 .consult-recommended {
-    background: #fffbeb;
+    background: var(--consult-rec-bg);
     border-color: #f59e0b;
-    color: #92400e;
+    color: #f59e0b; /* Changed from dark brown for better dark mode visibility */
 }
 
 .consult-urgent {
-    background: #fef2f2;
+    background: var(--consult-urg-bg);
     border-color: #ef4444;
-    color: #991b1b;
+    color: #ef4444; /* Changed from dark red for better dark mode visibility */
 }
 
 /* Severity Badges */
@@ -224,25 +285,25 @@ footer {
 
 /* Symptom Items */
 .symptom-item {
-    background: #f0f9ff;
-    border: 1px solid #e0f2fe;
+    background: var(--symptom-bg);
+    border: 1px solid var(--symptom-border);
     transition: all var(--transition-fast);
 }
 
 .symptom-item:hover {
-    background: #e0f2fe;
+    background: var(--symptom-hover);
     transform: translateX(4px);
 }
 
 /* Treatment Cards */
 .treatment-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--treatment-bg);
+    border: 1px solid var(--treatment-border);
     transition: all var(--transition-fast);
 }
 
 .treatment-card:hover {
-    background: #edf2f7;
+    background: var(--treatment-hover);
     border-color: var(--primary-color);
 }
 
@@ -262,13 +323,13 @@ footer {
 
 /* Prevention Items */
 .prevention-item {
-    background: #f0fdf4;
-    border: 1px solid #dcfce7;
+    background: var(--prevention-bg);
+    border: 1px solid var(--prevention-border);
     transition: all var(--transition-fast);
 }
 
 .prevention-item:hover {
-    background: #dcfce7;
+    background: var(--prevention-hover);
     transform: translateX(4px);
 }
 

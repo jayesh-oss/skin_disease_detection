@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row justify-content-center animate-fade-in">
+    <div class="col-lg-10">
+        <div class="premium-card p-4 p-md-5 mb-4 text-center">
+            <h1 class="display-5 fw-bold text-dark mb-3">Find a Dermatologist</h1>
+            <p class="lead text-muted mb-4">Use the map below to locate professional dermatology clinics and specialists near your location.</p>
+            
+            <div class="ratio ratio-16x9 rounded shadow-sm overflow-hidden border">
+                <iframe 
+                    src="https://www.google.com/maps?q=Dermatologist+near+me&output=embed" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade"
+                    style="border:0;">
+                </iframe>
+            </div>
+            
+            <div class="mt-5 p-4 rounded text-start border" style="background-color: var(--card-bg);">
+                <h4 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>Why Consult a Professional?</h4>
+                <p class="text-muted mb-0">
+                    While our AI tool provides a preliminary analysis, only a certified dermatologist can accurately diagnose skin conditions and prescribe effective treatment. Early detection by a professional is particularly critical for conditions like Melanoma.
+                </p>
+            </div>
+            
+            <div class="mt-4">
+                <a href="javascript:history.back()" class="btn btn-secondary-custom px-4">Go Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
