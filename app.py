@@ -4,7 +4,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, sen
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 from werkzeug.utils import secure_filename
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
@@ -20,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 # Secure Image Storage
 app.config['UPLOAD_FOLDER'] = "instance/uploads"
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB upload limit
+app.config['WTF_CSRF_TIME_LIMIT'] = None  # CSRF tokens don't expire during a session
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -33,6 +34,11 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 csrf = CSRFProtect(app)
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    flash('Your session expired. Please try again.')
+    return redirect(url_for('dashboard'))
 
 # Load ML model
 model = load_model("model/skin_model.h5")
@@ -126,7 +132,7 @@ def predict():
         img_array = image.img_to_array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
 
-        prediction = model.predict(img_array)
+        prediction = model.predict(img_array, verbose=0)
         predicted_class = class_names[np.argmax(prediction)]
         confidence = float(np.max(prediction))
 
@@ -157,14 +163,14 @@ def delete_prediction(prediction_id):
     pred = Prediction.query.get_or_404(prediction_id)
     if pred.user_id != current_user.id:
         abort(403)
-        
+    
     try:
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], pred.image_filename)
         if os.path.exists(filepath):
             os.remove(filepath)
-    except Exception as e:
-        print(f"Error deleting file: {e}")
-        
+    except Exception:
+        pass
+    
     db.session.delete(pred)
     db.session.commit()
     flash('Prediction deleted successfully.')

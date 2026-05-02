@@ -32,10 +32,10 @@
                         <p class="text-end text-muted small mt-1 mb-2">Confidence Level</p>
                         <div class="d-flex gap-2">
                             <a href="/report/{{ item.id }}" class="btn btn-sm btn-primary-custom flex-grow-1">View Report</a>
-                            <form action="/delete/{{ item.id }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this prediction?');">
+                            <form action="/delete/{{ item.id }}" method="POST" style="margin:0;">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger px-3" title="Delete Prediction">
-                                    <i class="bi bi-trash"></i>
+                                <button type="submit" class="btn btn-sm btn-outline-danger px-2" title="Delete">
+                                    <i class="bi bi-trash3" style="pointer-events:none;"></i>
                                 </button>
                             </form>
                         </div>
