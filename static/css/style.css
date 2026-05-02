@@ -70,6 +70,32 @@
     --consult-urg-bg: rgba(245, 101, 101, 0.1);
 }
 
+/* Bootstrap Dark Mode Overrides */
+[data-theme="dark"] .text-muted {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .text-dark {
+    color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .premium-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .bg-light,
+[data-theme="dark"] .bg-white {
+    background-color: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--card-bg);
+    color: var(--text-main);
+}
 
 body {
     font-family: 'Inter', sans-serif;
@@ -207,7 +233,6 @@ h1, h2, h3, h4, h5 {
 }
 
 .history-card:hover {
-    transform: translateY(-8px);
     box-shadow: var(--shadow-hover);
 }
 
